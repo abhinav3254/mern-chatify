@@ -10,6 +10,7 @@
         flex-direction: row;
         align-items: center;
         background-color: rgb(222, 222, 222);
+        // background-color: #6499E9;
         margin: 10px;
         padding: 10px;
         border-radius: 10px;
@@ -63,16 +64,27 @@
     .search {
         display: flex;
         flex-direction: row;
+        align-items: center;
+        padding: 10px 20px;
         margin: 10px;
+        border-radius: 20px;
+        height: 1.2rem;
+        border: 1px solid black;
 
         input {
-            width: 90%;
-            border-radius: 1rem;
-            padding: 0px 1rem;
+            width: 100%;
+            height: 2rem;
+            border: none;
+            background-color: none;
+            outline: none;
         }
-
         img {
-            width: 10%;
+            width: 2rem;
+            height: 2rem;
+
+            &:hover {
+                cursor: pointer;
+            }
         }
     }
 
@@ -91,7 +103,6 @@
             border-radius: 5px;
 
             img {
-                border: 1px solid red;
                 width: 4rem;
                 height: 4rem;
                 border-radius: 50%;
@@ -139,10 +150,24 @@
         }
 
         &:hover {
-            background-color: rgb(222, 222, 222);
+            // background-color: rgb(222, 222, 222);
+            background-color: #687EFF;
             cursor: pointer;
         }
     }
 
 
 }
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+
+  

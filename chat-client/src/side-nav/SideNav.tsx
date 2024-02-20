@@ -30,6 +30,9 @@ function SideNav() {
                 </div>
                 <img className='edit-icon' src={editIcons} alt="" />
             </div>
+
+            {/* search bar code */}
+
             <div className="search">
                 <input type="text" placeholder='search...' />
                 <img src={searcIcon} alt="" />
