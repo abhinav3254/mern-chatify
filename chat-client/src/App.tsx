@@ -1,14 +1,11 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import SideNav from './side-nav/SideNav';
-import Chat from './Chat/Chat';
+import Navbar from './components/Navbar/Navbar';
 
 function App() {
   return (
     <div className="app">
-      <SideNav />
-      <Chat />
+      <Navbar />
     </div>
   );
 }
