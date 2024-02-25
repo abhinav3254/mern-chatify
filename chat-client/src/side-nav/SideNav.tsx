@@ -1,7 +1,7 @@
 import React from 'react';
 import './SideNav.scss';
 import editIcons from '../images/svg/edit.svg';
-import searcIcon from '../images/svg/search.svg'
+import searcIcon from '../images/search.svg'
 import chatDemo from '../json/chat-json-side.json';
 import settingIcon from '../images/svg/setting.svg'
 

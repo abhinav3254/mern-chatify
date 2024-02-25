@@ -1,22 +1,78 @@
 .SideNav {
-    padding-top: 65px;
+    padding: 70px 0 0 2px;
+    width: 25%;
+    display: flex;
+    flex-direction: column;
 
-    .Card {
+    .SearchBar {
         display: flex;
         flex-direction: row;
-        border: 1px solid black;
         align-items: center;
+        padding: 10px 20px;
+        border: 1px solid black;
+        border-radius: 20px;
 
-        img {
-            width: 50px;
-            height: 50px;
+        input {
+            width: 100%;
+            border: none;
+            outline: none;
         }
-        .Content{
+        
+        img {
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    .ScrollView {
+
+        overflow: scroll;
+        height: 650px;
+        padding: 10px;
+
+        .Card {
             display: flex;
-            flex-direction: column;
-            p {
-                margin: 0;
+            flex-direction: row;
+            align-items: center;
+            padding: 5px;
+            margin: 8px 2px;
+
+            &:hover {
+                cursor: pointer;
+                background-color: #f8a532;
+                color: #f1eded;
+                box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2);
+            }
+    
+            img {
+                width: 60px;
+                height: 50px;
+                border-radius: 50%;
+            }
+            .Content{
+                margin: 0 5px;
+                display: flex;
+                flex-direction: column;
+                width: 75%;
+                p {
+                    margin: 0;
+                }
+    
+                .Name {
+                    font-size: 15px;
+                    font-weight: 500;
+                }
+    
+                .Message {
+                    font-size: 12px;
+                    font-style: italic;
+                }
+            }
+    
+            .Time {
+                font-size: 10px;
             }
         }
     }
+   
 }
