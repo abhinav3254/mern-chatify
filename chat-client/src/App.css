@@ -1,9 +1,0 @@
-.app {
-    display: flex;
-    flex-direction: column;
-}
-
-.component {
-    display: flex;
-    flex-direction: row;
-}
