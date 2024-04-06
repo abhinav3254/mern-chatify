@@ -8,6 +8,9 @@ const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const bcryptjs = require('bcryptjs');
 
+// web socket
+const ws = require('ws')
+
 // config dotenv file
 dotenv.config();
 // console.log(process.env.MONGO_URL);
@@ -79,6 +82,15 @@ app.post('/login', async (req, res) => {
 });
 
 const PORT = 4000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`app is listening on port number ${PORT}`)
+});
+
+
+/**
+ * web socket code starts from here
+ */
+const wss = new ws.WebSocketServer({ server });
+wss.on('connection', (connection) => {
+    console.log(`web socket connected`);
 });
