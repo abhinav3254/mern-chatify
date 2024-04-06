@@ -1,12 +1,15 @@
-import logo from './logo.svg';
-import './App.css';
+import Register from './components/Register';
+import axios from "axios";
 
 function App() {
+
+  // adding the base url
+  axios.defaults.baseURL = 'http://localhost:4000';
+  axios.defaults.withCredentials = true;
+
   return (
     <div>
-      <h1 className="text-3xl font-bold underline">
-        Hello world!
-      </h1>
+      <Register />
     </div>
   );
 }
