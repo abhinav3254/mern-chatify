@@ -1,5 +1,6 @@
-import Register from './components/Register';
 import axios from "axios";
+import { UserContextProvider } from './components/UserContext';
+import Routes from './components/Routes';
 
 function App() {
 
@@ -9,7 +10,9 @@ function App() {
 
   return (
     <div>
-      <Register />
+      <UserContextProvider>
+        <Routes />
+      </UserContextProvider>
     </div>
   );
 }
