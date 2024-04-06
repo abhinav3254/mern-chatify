@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 function Chat() {
 
     const [ws, setWs] = useState(null);
+    const [onlinePeople, setOnlinePeople] = useState({});
 
     useEffect(() => {
         const ws = new WebSocket('ws://localhost:4000');
@@ -10,14 +11,27 @@ function Chat() {
         ws.addEventListener('message', handleMessage)
     }, []);
 
+    function showOnlinePeople(peopleArray) {
+        const people = {};
+        peopleArray.forEach(({ userId, username }) => {
+            people[userId] = username;
+        });
+        setOnlinePeople(people);
+    }
+
     function handleMessage(e) {
-        console.log(`new message ${JSON.stringify(e)}`);
+        const messageData = JSON.parse(e.data);
+        if ('ononline' in messageData) {
+            showOnlinePeople(messageData.ononline);
+        }
     }
 
     return (
         <div className='flex h-screen'>
             <div className="bg-white-100 w-1/3">
-                contacts
+                {Object.keys(onlinePeople).map(userId => (
+                    <div>{onlinePeople[userId]}</div>
+                ))}
             </div>
             <div className="flex flex-col bg-blue-50 w-2/3 p-2">
                 <div className="flex-grow">messages</div>

@@ -91,7 +91,31 @@ const server = app.listen(PORT, () => {
  * web socket code starts from here
  */
 const wss = new ws.WebSocketServer({ server });
-wss.on('connection', (connection) => {
-    console.log(`web socket connected`);
-    connection.send('hello');
+wss.on('connection', (connection, req) => {
+    const cookies = req.headers.cookie;
+    if (cookies) {
+        const tokenCookieString = cookies.split(';').find(str => str.startsWith('token='));
+        if (tokenCookieString) {
+            const token = tokenCookieString.split('=')[1];
+            if (token) {
+                jwt.verify(token, process.env.JWT_SECRET, {}, (err, userData) => {
+                    if (err) throw err;
+                    const { userId, username } = userData;
+                    connection.userId = userId;
+                    connection.username = username;
+                })
+            }
+        }
+    }
+
+    // here we are two clients because when we run react app in development mode
+    // it renders each component two times so that's the reason we have two clients
+    // console.log([...wss.clients].length);
+    // getting all the usernames which are online now
+    // console.log([...wss.clients].map(e => connection.username));
+    [...wss.clients].forEach(client => {
+        client.send(JSON.stringify({
+            ononline: [...wss.clients].map(c => ({ userId: c.userId, username: c.username }))
+        }));
+    })
 });
