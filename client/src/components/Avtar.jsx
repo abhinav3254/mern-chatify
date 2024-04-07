@@ -4,7 +4,6 @@ export default function Avtar({ username, userId }) {
     const userIdBase10 = parseInt(userId, 16);
     const colorIndex = userIdBase10 % colors.length;
     const color = colors[colorIndex];
-    console.log(color);
 
     return (
         <div className={"w-8 h-8 rounded-full flex items-center " + color} >
