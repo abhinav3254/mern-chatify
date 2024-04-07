@@ -41,11 +41,16 @@ function Chat() {
                 <Logo />
                 {Object.keys(onlinePeopleExcludingOurUser).map(userId => (
                     <div
-                        className={"border-b border-gray-100 py-2 px-4 flex gap-2 items-center cursor-pointer " + (userId === selectedUserId ? 'bg-blue-50' : '')}
+                        className={"border-b border-gray-100 flex gap-2 items-center cursor-pointer " + (userId === selectedUserId ? 'bg-blue-50' : '')}
                         key={userId}
                         onClick={() => setSelectedUserId(userId)}>
-                        <Avtar username={onlinePeople[userId]} userId={userId} />
-                        <span className="text-gray-800">{onlinePeople[userId]}</span>
+                        {userId === selectedUserId && (
+                            <div className="w-1 bg-blue-500 h-12 rounded-tr-md"></div>
+                        )}
+                        <div className=" flex gap-2 py-2 px-4 items-center">
+                            <Avtar username={onlinePeople[userId]} userId={userId} />
+                            <span className="text-gray-800">{onlinePeople[userId]}</span>
+                        </div>
                     </div>
                 ))}
             </div>
