@@ -29,16 +29,16 @@ function Chat() {
         const messageData = JSON.parse(e.data);
         if ('ononline' in messageData) {
             showOnlinePeople(messageData.ononline);
+        } else {
+            console.log({ messageData })
         }
     }
 
     function sendMessage(e) {
         e.preventDefault();
         ws.send(JSON.stringify({
-            message: {
-                recipient: selectedUserId,
-                text: newMessageText
-            }
+            recipient: selectedUserId,
+            text: newMessageText
         }));
     }
 
