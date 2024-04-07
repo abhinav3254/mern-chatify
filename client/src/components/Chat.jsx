@@ -10,6 +10,7 @@ function Chat() {
     const [selectedUserId, setSelectedUserId] = useState(null);
     const { username, id } = useContext(UserContext);
     const [newMessageText, setNewMessageText] = useState('');
+    const [messages, setMessages] = useState([]);
 
     useEffect(() => {
         const ws = new WebSocket('ws://localhost:4000');
@@ -27,10 +28,11 @@ function Chat() {
 
     function handleMessage(e) {
         const messageData = JSON.parse(e.data);
+        console.log({ e, messageData });
         if ('ononline' in messageData) {
             showOnlinePeople(messageData.ononline);
-        } else {
-            console.log({ messageData })
+        } else if ('text' in messageData) {
+            setMessages(prev => ([...prev, { ...messageData }]));
         }
     }
 
@@ -40,11 +42,30 @@ function Chat() {
             recipient: selectedUserId,
             text: newMessageText
         }));
+        setNewMessageText('');
+        setMessages(prev => ([...prev, {
+            text: newMessageText,
+            sender: id,
+            recipient: selectedUserId,
+            id: Date.now(),
+        }]))
     }
 
     // deleting our user from the JSON Object
     const onlinePeopleExcludingOurUser = { ...onlinePeople };
     delete onlinePeopleExcludingOurUser[id];
+
+    // I am using Lodash library instead I am using my own function
+    // to get unique by id
+    const getUniqueById = (array, key) => {
+        const uniqueMap = new Map();
+        array.forEach(item => {
+            uniqueMap.set(item[key], item);
+        });
+        return Array.from(uniqueMap.values());
+    };
+
+    const messagesWithoutDupes = getUniqueById(messages, 'id');
 
     return (
         <div className='flex h-screen'>
@@ -71,6 +92,22 @@ function Chat() {
                         <div className="flex items-center justify-center h-full">
                             <div className="text-gray-300">&larr; selected a person to chat</div>
                         </div>
+                    )}
+                    {!!selectedUserId && (
+                        <div className="relative h-full">
+                            <div className="overflow-y-scroll absolute inset-0">
+                                {messagesWithoutDupes.map((message, key) => (
+                                    <div className={(message.sender === id ? 'text-right' : 'text-left')}>
+                                        <div key={key} className={"text-left inline-block p-2 my-2 rounded-md text-sm " + (message.sender === id ? "bg-blue-500 text-white" : "bg-white text-gray-500")}>
+                                            sender:{message.sender} <br />
+                                            my id:{id} <br />
+                                            {message.text}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
                     )}
                 </div>
 

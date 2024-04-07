@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const User = require('./models/User');
+const Message = require('./models/Message');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -111,13 +112,23 @@ wss.on('connection', (connection, req) => {
 
 
     // sending message code is written here
-    connection.on('message', (message) => {
+    connection.on('message', async (message) => {
         const messageData = JSON.parse(message.toString());
         const { recipient, text } = messageData;
         if (recipient && text) {
+            const messageDoc = await Message.create({
+                sender: connection.userId,
+                recipient,
+                text,
+            });
             [...wss.clients]
                 .filter(c => c.userId === recipient)
-                .forEach(c => c.send(JSON.stringify({ text })))
+                .forEach(c => c.send(JSON.stringify({
+                    text,
+                    sender: connection.userId,
+                    recipient,
+                    id: messageDoc._id,
+                })))
         }
     });
 
