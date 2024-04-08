@@ -16,10 +16,36 @@ function Chat() {
     const divUnderMessages = useRef();
 
     useEffect(() => {
+        connectToWs();
+    }, []);
+
+    /**
+     * What is the need of this function
+     * 
+     * actually what is happening right now, is that
+     * jakhan haam index.js me kicho change kraye chiye aur save karye chiye takhan ki hoye chaye je ki haam frontend ke refresh krliye 
+     * takahn automatically connection gayab ho jaye chaye
+     * 
+     * ta ham ki karaybe je chaiy je se hum ek function bananbe je ki
+     * automatically reconnect krte....
+     * 
+     */
+    function connectToWs() {
         const ws = new WebSocket('ws://localhost:4000');
         setWs(ws);
-        ws.addEventListener('message', handleMessage)
-    }, []);
+        ws.addEventListener('message', handleMessage);
+        // ws.addEventListener('close', () => console.log('closed'));
+        // here when the connection or backend is restarted then this
+        // line of code will automatically start reconnecting to the web socket
+        // not reconnect immediately instead wait for 1 seconds then try 
+        // then try to reconnect again...
+        ws.addEventListener('close', () => {
+            setTimeout(() => {
+                console.log('Disconnected!, trying to reconnect');
+                connectToWs();
+            }, 1000);
+        });
+    }
 
     function showOnlinePeople(peopleArray) {
         const people = {};
@@ -31,7 +57,6 @@ function Chat() {
 
     function handleMessage(e) {
         const messageData = JSON.parse(e.data);
-        console.log({ e, messageData });
         if ('ononline' in messageData) {
             showOnlinePeople(messageData.ononline);
         } else if ('text' in messageData) {
