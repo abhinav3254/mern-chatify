@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import Avtar from './Avtar';
 import Logo from './Logo';
 import { UserContext } from './UserContext';
@@ -11,6 +11,8 @@ function Chat() {
     const { username, id } = useContext(UserContext);
     const [newMessageText, setNewMessageText] = useState('');
     const [messages, setMessages] = useState([]);
+    // creating ref for auto scroll feature
+    const divUnderMessages = useRef();
 
     useEffect(() => {
         const ws = new WebSocket('ws://localhost:4000');
@@ -48,8 +50,18 @@ function Chat() {
             sender: id,
             recipient: selectedUserId,
             id: Date.now(),
-        }]))
+        }]));
     }
+
+    /**
+     * here we have used the scroll feature and in the sendMessage because it's a async function and it value is not getting update instantly so to resolve this issue we have used here.
+     */
+    useEffect(() => {
+        const div = divUnderMessages.current;
+        if (div) {
+            div.scrollIntoView({ behaviour: 'smooth', block: 'end' });
+        }
+    }, [messages]);
 
     // deleting our user from the JSON Object
     const onlinePeopleExcludingOurUser = { ...onlinePeople };
@@ -95,7 +107,7 @@ function Chat() {
                     )}
                     {!!selectedUserId && (
                         <div className="relative h-full">
-                            <div className="overflow-y-scroll absolute inset-0">
+                            <div className="overflow-y-scroll absolute top-0 left-0 right-0 bottom-2">
                                 {messagesWithoutDupes.map((message, key) => (
                                     <div className={(message.sender === id ? 'text-right' : 'text-left')}>
                                         <div key={key} className={"text-left inline-block p-2 my-2 rounded-md text-sm " + (message.sender === id ? "bg-blue-500 text-white" : "bg-white text-gray-500")}>
@@ -105,9 +117,10 @@ function Chat() {
                                         </div>
                                     </div>
                                 ))}
+                                {/* this div is for scroll automatically thing */}
+                                <div ref={divUnderMessages}></div>
                             </div>
                         </div>
-
                     )}
                 </div>
 
