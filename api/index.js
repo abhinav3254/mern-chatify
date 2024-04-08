@@ -117,8 +117,8 @@ app.get('/messages/:userId', async (req, res) => {
         const messages = await Message.find({
             sender: { $in: [userId, ourUserId] },
             recipient: { $in: [userId, ourUserId] },
-        }).sort({ createdAt: -1 }).exec();
-        // sorting by createdAt by desc
+        }).sort({ createdAt: 1 });
+        // sorting by createdAt by asc
         // responding back with the messages json
         res.json(messages);
     } catch (err) {
@@ -171,7 +171,7 @@ wss.on('connection', (connection, req) => {
                     text,
                     sender: connection.userId,
                     recipient,
-                    id: messageDoc._id,
+                    _id: messageDoc._id,
                 })))
         }
     });
