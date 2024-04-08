@@ -82,6 +82,51 @@ app.post('/login', async (req, res) => {
 
 });
 
+
+/**
+ * This is a common method that we creating to fetch the current logged in user id.
+ * @returns userData if there is token in cookie else returns a string message stating that no token was found in cookie 
+ */
+async function getUserDataFromRequest(req) {
+    return new Promise((resolve, reject) => {
+        const token = req.cookies?.token;
+        if (token) {
+            jwt.verify(token, jwtSecret, {}, (err, userData) => {
+                if (err) throw err;
+                const { id, username } = userData;
+                resolve(userData);
+            });
+        } else {
+            reject('no token');
+        }
+    });
+}
+
+
+/**
+ * This route will send the chat history of selected user and currenlty logged in user
+ */
+app.get('/messages/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        // getting our userid from the token
+        const userData = await getUserDataFromRequest(req);
+        const ourUserId = userData.userId;
+        // writing the query for mongodb where we are telling that either we can be sender or other person will be the user and vice versa and fetching all of the details
+
+        // console.log(userId + ' and rec' + ourUserId);
+        const messages = await Message.find({
+            sender: { $in: [userId, ourUserId] },
+            recipient: { $in: [userId, ourUserId] },
+        }).sort({ createdAt: -1 }).exec();
+        // sorting by createdAt by desc
+        // responding back with the messages json
+        res.json(messages);
+    } catch (err) {
+        console.error(err);
+    }
+});
+
 const PORT = 4000;
 const server = app.listen(PORT, () => {
     console.log(`app is listening on port number ${PORT}`)

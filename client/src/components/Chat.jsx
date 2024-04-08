@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import Avtar from './Avtar';
 import Logo from './Logo';
 import { UserContext } from './UserContext';
+import axios from 'axios';
 
 function Chat() {
 
@@ -62,6 +63,17 @@ function Chat() {
             div.scrollIntoView({ behaviour: 'smooth', block: 'end' });
         }
     }, [messages]);
+
+
+    /**
+     * This useEffect will run when selected user changes
+     */
+    useEffect(() => {
+        if (selectedUserId) {
+            // this route will fecth chat between our user and selected user
+            axios.get('/messages/' + selectedUserId);
+        }
+    }, [selectedUserId]);
 
     // deleting our user from the JSON Object
     const onlinePeopleExcludingOurUser = { ...onlinePeople };
