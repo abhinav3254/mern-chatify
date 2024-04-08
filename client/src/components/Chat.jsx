@@ -3,11 +3,13 @@ import Avtar from './Avtar';
 import Logo from './Logo';
 import { UserContext } from './UserContext';
 import axios from 'axios';
+import Contact from './Contact';
 
 function Chat() {
 
     const [ws, setWs] = useState(null);
     const [onlinePeople, setOnlinePeople] = useState({});
+    const [offilePeople, setOfflinePeople] = useState({});
     const [selectedUserId, setSelectedUserId] = useState(null);
     const { username, id } = useContext(UserContext);
     const [newMessageText, setNewMessageText] = useState('');
@@ -107,6 +109,25 @@ function Chat() {
         }
     }, [selectedUserId]);
 
+    /**
+     * This function will run everytime when online pepole changes
+     */
+    useEffect(() => {
+        axios.get('/pepole').then(res => {
+            // here we filtered our userId
+            const offilePeopleArr = res.data
+                // here excluding our own user id
+                .filter(p => p._id !== id)
+                // exclude those person which are inside online people list
+                .filter(p => !Object.keys(onlinePeople).includes(p._id));
+            const offilePeople = {};
+            offilePeopleArr.forEach(p => {
+                offilePeople[p._id] = p;
+            });
+            setOfflinePeople(offilePeople);
+        });
+    }, [onlinePeople]);
+
     // deleting our user from the JSON Object
     const onlinePeopleExcludingOurUser = { ...onlinePeople };
     delete onlinePeopleExcludingOurUser[id];
@@ -128,19 +149,25 @@ function Chat() {
             <div className="bg-white-100 w-1/3">
                 <Logo />
                 {Object.keys(onlinePeopleExcludingOurUser).map(userId => (
-                    <div
-                        className={"border-b border-gray-100 flex gap-2 items-center cursor-pointer " + (userId === selectedUserId ? 'bg-blue-50' : '')}
+                    <Contact
                         key={userId}
-                        onClick={() => setSelectedUserId(userId)}>
-                        {userId === selectedUserId && (
-                            <div className="w-1 bg-blue-500 h-12 rounded-tr-md"></div>
-                        )}
-                        <div className=" flex gap-2 py-2 px-4 items-center">
-                            <Avtar username={onlinePeople[userId]} userId={userId} />
-                            <span className="text-gray-800">{onlinePeople[userId]}</span>
-                        </div>
-                    </div>
+                        id={userId}
+                        username={onlinePeopleExcludingOurUser[userId]}
+                        onClick={() => setSelectedUserId(userId)}
+                        selected={userId === selectedUserId}
+                        online={true}
+                    />
                 ))}
+                {Object.keys(offilePeople).map(userId => (
+                    <Contact id={userId}
+                        key={userId}
+                        username={offilePeople[userId].username}
+                        onClick={() => setSelectedUserId(userId)}
+                        selected={userId === selectedUserId}
+                        online={false}
+                    />
+                ))}
+
             </div>
             <div className="flex flex-col bg-blue-50 w-2/3 p-2">
                 <div className="flex-grow">

@@ -34,6 +34,10 @@ app.get('/test', (req, res) => {
     res.json('test-ok');
 });
 
+
+/**
+ * This route returns the profile details of the user
+ */
 app.get('/profile', (req, res) => {
     const token = req.cookies?.token;
     if (token) {
@@ -48,6 +52,21 @@ app.get('/profile', (req, res) => {
 
 });
 
+/**
+ * This route will fetch all the users either they are online or offline
+ */
+app.get('/pepole', async (req, res) => {
+    // here we are basically not passing any condition in {}
+    // but in second that is projection we are passing that we want
+    // _id and username and 1 means true
+    const users = await User.find({}, { '_id': 1, username: 1 });
+    res.json(users);
+});
+
+
+/**
+ * This route let the user to register
+ */
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
     try {
@@ -136,7 +155,35 @@ const server = app.listen(PORT, () => {
  * web socket code starts from here
  */
 const wss = new ws.WebSocketServer({ server });
+
+/**
+ * This method get called when someone is connected to the websocket
+ */
 wss.on('connection', (connection, req) => {
+
+    function notifyAboutOnlinePeople() {
+        [...wss.clients].forEach(client => {
+            client.send(JSON.stringify({
+                ononline: [...wss.clients].map(c => ({ userId: c.userId, username: c.username }))
+            }));
+        })
+    }
+
+    connection.isAlive = true;
+
+    connection.timer = setInterval(() => {
+        connection.ping();
+        connection.deathTimer = setTimeout(() => {
+            connection.isAlive = false;
+            connection.terminate();
+            notifyAboutOnlinePeople();
+        }, 1000);
+    }, 5000);
+
+    connection.on('pong', () => {
+        clearTimeout(connection.deathTimer);
+    });
+
     // read username and id from the cookie for this connection
     const cookies = req.headers.cookie;
     if (cookies) {
@@ -183,9 +230,6 @@ wss.on('connection', (connection, req) => {
     // console.log([...wss.clients].map(e => connection.username));
 
     // notify everyone about online pepole (when someone connects)
-    [...wss.clients].forEach(client => {
-        client.send(JSON.stringify({
-            ononline: [...wss.clients].map(c => ({ userId: c.userId, username: c.username }))
-        }));
-    })
+    notifyAboutOnlinePeople();
+
 });
