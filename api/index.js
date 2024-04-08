@@ -7,7 +7,6 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
-const bcryptjs = require('bcryptjs');
 
 // web socket
 const ws = require('ws')
