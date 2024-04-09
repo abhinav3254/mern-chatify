@@ -11,7 +11,7 @@ function Chat() {
     const [onlinePeople, setOnlinePeople] = useState({});
     const [offilePeople, setOfflinePeople] = useState({});
     const [selectedUserId, setSelectedUserId] = useState(null);
-    const { username, id } = useContext(UserContext);
+    const { username, id, setId, setUsername } = useContext(UserContext);
     const [newMessageText, setNewMessageText] = useState('');
     const [messages, setMessages] = useState([]);
     // creating ref for auto scroll feature
@@ -128,6 +128,18 @@ function Chat() {
         });
     }, [onlinePeople]);
 
+    /**
+     * function for logout
+     */
+    function logout() {
+        axios.post('/logout').then(() => {
+            // setting websocket to null so that It should starts to auto reconnect
+            setWs(null);
+            setId(null);
+            setUsername(null);
+        });
+    }
+
     // deleting our user from the JSON Object
     const onlinePeopleExcludingOurUser = { ...onlinePeople };
     delete onlinePeopleExcludingOurUser[id];
@@ -146,27 +158,40 @@ function Chat() {
 
     return (
         <div className='flex h-screen'>
-            <div className="bg-white-100 w-1/3">
-                <Logo />
-                {Object.keys(onlinePeopleExcludingOurUser).map(userId => (
-                    <Contact
-                        key={userId}
-                        id={userId}
-                        username={onlinePeopleExcludingOurUser[userId]}
-                        onClick={() => setSelectedUserId(userId)}
-                        selected={userId === selectedUserId}
-                        online={true}
-                    />
-                ))}
-                {Object.keys(offilePeople).map(userId => (
-                    <Contact id={userId}
-                        key={userId}
-                        username={offilePeople[userId].username}
-                        onClick={() => setSelectedUserId(userId)}
-                        selected={userId === selectedUserId}
-                        online={false}
-                    />
-                ))}
+            <div className="bg-white-100 w-1/3 flex flex-col">
+                <div className="flex-grow">
+                    <Logo />
+                    {Object.keys(onlinePeopleExcludingOurUser).map(userId => (
+                        <Contact
+                            key={userId}
+                            id={userId}
+                            username={onlinePeopleExcludingOurUser[userId]}
+                            onClick={() => setSelectedUserId(userId)}
+                            selected={userId === selectedUserId}
+                            online={true}
+                        />
+                    ))}
+                    {Object.keys(offilePeople).map(userId => (
+                        <Contact id={userId}
+                            key={userId}
+                            username={offilePeople[userId].username}
+                            onClick={() => setSelectedUserId(userId)}
+                            selected={userId === selectedUserId}
+                            online={false}
+                        />
+                    ))}
+                </div>
+                <div className="p-2 text-center flex items-center justify-center">
+                    <span className="mr-2 text-sm text-gray-600 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                        </svg>
+                        {username}</span>
+                    <button
+                        onClick={logout}
+                        className="text-sm text-gray-500 bg-blue-100 py-1 px-2 border rounded-sm"
+                    >logout</button>
+                </div>
 
             </div>
             <div className="flex flex-col bg-blue-50 w-2/3 p-2">

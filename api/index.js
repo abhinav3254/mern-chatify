@@ -84,6 +84,10 @@ app.post('/register', async (req, res) => {
     }
 });
 
+
+/**
+ * route for login
+ */
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const foundUser = await User.findOne({ username });
@@ -98,6 +102,13 @@ app.post('/login', async (req, res) => {
         }
     }
 
+});
+
+/**
+ * route for logout
+ */
+app.post('/logout', (req, res) => {
+    res.cookie('token', '', { sameSite: 'none', secure: true }).json('ok');
 });
 
 
@@ -171,10 +182,16 @@ wss.on('connection', (connection, req) => {
 
     connection.isAlive = true;
 
+    /**
+     * here what was happening when logout is clicked is that 
+     * it starts to reconnect automatically
+     * so for this we have used clearInterval();
+     */
     connection.timer = setInterval(() => {
         connection.ping();
         connection.deathTimer = setTimeout(() => {
             connection.isAlive = false;
+            clearInterval(connection.timer);
             connection.terminate();
             notifyAboutOnlinePeople();
         }, 1000);
